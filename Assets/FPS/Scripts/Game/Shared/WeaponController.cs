@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using AYellowpaper.SerializedCollections;
 using UnityEngine;
@@ -39,6 +40,27 @@ namespace Unity.FPS.Game
         }
     }
 
+    // container for all the information timers need
+    [System.Serializable]
+    public struct TimerData
+    {
+        // if timer should be applied to weapon or mod
+        public bool onWeapon;
+
+        // amount of time between calls
+        public float timeDelay;
+        
+        // event that is called each cycle
+        public UnityEvent callEvent;
+
+        // setting the variables
+        public TimerData(bool weapon, float delay, UnityEvent uEvent) {
+            onWeapon = weapon;
+            timeDelay = delay;
+            callEvent = uEvent;
+        }
+    }
+
     [System.Serializable]
     public struct CrosshairData
     {
@@ -74,14 +96,16 @@ namespace Unity.FPS.Game
         [Tooltip("Modified stats of the This weapon")] //? not serialized because only changed in code
         [HideInInspector] Dictionary<StatType, float> modStats = new Dictionary<StatType, float>();
 
-        /* -- Functions -- */
-        [Tooltip("Unmodified stats of the This weapon")]
-        [SerializedDictionary("Stat Type", "Value")] //? serialized to adjust in editor.
-        public SerializedDictionary<FunctionType, UnityEvent> baseFunctions = new SerializedDictionary<FunctionType, UnityEvent>();
-        
-        [Tooltip("Modified stats of the This weapon")] //? not serialized because only changed in code
-        [SerializedDictionary("Stat Type", "Value")] //? serialized to adjust in editor.
-        public SerializedDictionary<FunctionType, UnityEvent> modFunctions = new SerializedDictionary<FunctionType, UnityEvent>();
+        /* -- Functions -- */        
+        [Tooltip("Events that happen on certain functions")]
+        [SerializedDictionary("Function Type", "Event")]
+        public SerializedDictionary<FunctionType, List<UnityEvent>> modFunctions = new SerializedDictionary<FunctionType, List<UnityEvent>>();
+
+        /* -- Timers -- */
+        [SerializeField] List<TimerData> modTimerData = new List<TimerData>();
+
+        // saving the timers the weapon is currently running
+        [SerializeField] List<Coroutine> runningTimers = new List<Coroutine>();
 
         /* -- Other Weapon Stuff -- */
         [Header("Information")] [Tooltip("The name that will be displayed in the UI for this weapon")]
@@ -219,13 +243,22 @@ namespace Unity.FPS.Game
 
         private Queue<Rigidbody> m_PhysicalAmmoPool;
 
+        #region Loading Mods
+
         // loading all mods into the modified stats
         void LoadMods()
         {
+            //! temporary before UI is implemented
+            // stopping timers
+            foreach (Coroutine timer in runningTimers) {
+                StopCoroutine(timer);
+            }
+
             // resetting weapon stats
             modDamage = baseDamage;
             modStats = baseStats;
-            modFunctions = baseFunctions;
+            modFunctions = new SerializedDictionary<FunctionType, List<UnityEvent>>();
+            modTimerData = new List<TimerData>();
 
             //! BRING ME ALL THE FOR LOOPS!
             for (int g = 0; g < modGroups.Length; g++) {
@@ -245,15 +278,24 @@ namespace Unity.FPS.Game
 
                             // adding events to functions
                             case ModType.onFunction:
+                                if (modFunctions.ContainsKey(modGroups[g].mods[m].effects[e].function)) { // adding events to function
+                                    modFunctions[modGroups[g].mods[m].effects[e].function].Add(modGroups[g].mods[m].effects[e].functionality);
+                                } else { // creating a new entry in the dictionary with the events for that function
+                                    modFunctions.Add(modGroups[g].mods[m].effects[e].function, new List<UnityEvent>() {modGroups[g].mods[m].effects[e].functionality});
+                                }
                                 break;
 
                             // adding events to timers
                             case ModType.onTimer:
+                                modTimerData.Add(new TimerData(modGroups[g].mods[m].effects[e].weapon, modGroups[g].mods[m].effects[e].timeDelay, modGroups[g].mods[m].effects[e].functionality));
                                 break;
                         }
                     }
                 }
             }
+
+            // starting all timers
+            InitializeTimers();
         }
 
         // modifying stats and checking if within bounds
@@ -272,6 +314,45 @@ namespace Unity.FPS.Game
             //? bullet acceleration: not limited
             modStats[StatType.magCapacity] = Mathf.Clamp(modStats[StatType.magCapacity], 1, Mathf.Infinity); //? Mag capacity: more than 1 bullet
             modStats[StatType.ammoCapacity] = Mathf.Clamp(modStats[StatType.ammoCapacity], 1, Mathf.Infinity); //? ammo Capacity: More than 1 bullet
+        }
+
+        // starting and saving weapon timers
+        void InitializeTimers()
+        {
+            // looping through all timers
+            for (int i = 0; i < modTimerData.Count; i++) {
+                if (modTimerData[i].onWeapon) // if applicable to weapon, start timer
+                    runningTimers.Add(StartCoroutine(eventTimer(modTimerData[i].timeDelay, modTimerData[i].callEvent)));
+            }
+        }
+
+        #endregion
+
+        #region Timer Coroutine
+
+        IEnumerator eventTimer(float time, UnityEvent uEvent)
+        {
+            // looping until stopped
+            while (true) {
+
+                // wait for delay
+                yield return new WaitForSeconds(time);
+
+                // invoke events
+                uEvent.Invoke();
+            }
+        }
+
+        #endregion
+
+        //! debugging
+        void SimulateShoot()
+        {
+            // invoking all events linked to firing weapon
+            if (modFunctions.ContainsKey(FunctionType.weaponFire))
+                foreach (UnityEvent uEvent in modFunctions[FunctionType.weaponFire]) {
+                    uEvent.Invoke();
+                }
         }
 
         void Awake()
@@ -357,8 +438,12 @@ namespace Unity.FPS.Game
                 m_LastMuzzlePosition = WeaponMuzzle.position;
             }
 
-            if (Input.GetKeyDown(KeyCode.U)) {
+            //! debugging
+            if (Input.GetKeyDown(KeyCode.U)) { // loading mods
                 LoadMods();
+            }
+            if (Input.GetKeyDown(KeyCode.Y)) { // simulating firing weapon
+                SimulateShoot();
             }
         }
 

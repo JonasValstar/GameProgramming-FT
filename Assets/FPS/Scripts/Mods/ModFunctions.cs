@@ -11,6 +11,9 @@ public class ModFunctions : MonoBehaviour
     public void Heal(int amount)
     {
         // healing
+
+        //? debugging to see if the code works
+        Debug.Log(amount);
     }
 
     /// <summary>
@@ -20,5 +23,8 @@ public class ModFunctions : MonoBehaviour
     public void Drop(GameObject item)
     {
         // healing
+
+        //? debugging to see if the code works
+        Debug.Log(item);
     }
 }

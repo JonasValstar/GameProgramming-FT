@@ -208,18 +208,54 @@ MonoBehaviour:
   type: 0
   rarity: 0
   effects:
-  - name: Fire Damage +3
-    modType: 1
-    description: Increases Fire Damage by 3
+  - name: Heal 10 every 1 seconds
+    modType: 2
+    description: 
     element: 0
-    statType: 5
-    function: 0
-    weapon: 0
-    timeDelay: 0
+    statType: 0
+    function: 1
+    weapon: 1
+    timeDelay: 1
     functionality:
       m_PersistentCalls:
-        m_Calls: []
-    value: 3
+        m_Calls:
+        - m_Target: {fileID: 253942793}
+          m_TargetAssemblyTypeName: ModFunctions, fps.Mods
+          m_MethodName: Heal
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 10
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    value: 0
+  - name: Heal 20 every 2 seconds
+    modType: 2
+    description: 
+    element: 0
+    statType: 0
+    function: 1
+    weapon: 1
+    timeDelay: 2
+    functionality:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 253942793}
+          m_TargetAssemblyTypeName: ModFunctions, fps.Mods
+          m_MethodName: Heal
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 20
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    value: 0
 --- !u!4 &253942795
 Transform:
   m_ObjectHideFlags: 0
