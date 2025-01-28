@@ -13,7 +13,7 @@ public class ModFunctions : MonoBehaviour
         // healing
 
         //? debugging to see if the code works
-        Debug.Log(amount);
+        Debug.Log($"Healed: {amount}");
     }
 
     /// <summary>
@@ -25,6 +25,18 @@ public class ModFunctions : MonoBehaviour
         // healing
 
         //? debugging to see if the code works
-        Debug.Log(item);
+        Debug.Log($"Dropped: {item}");
+    }
+
+    /// <summary>
+    /// Teleport the player in the direction specified
+    /// </summary>
+    /// <param name="direction">The amount the player is phased in the direction of the camera</param>
+    public void Phase(float distance)
+    {
+        // Phasing
+
+        //? debugging to see if the code works
+        Debug.Log($"Phased the player forward: {distance}");
     }
 }

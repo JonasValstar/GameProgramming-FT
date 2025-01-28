@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using AYellowpaper.SerializedCollections;
+using Codice.CM.Common.Tree;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,32 +14,6 @@ namespace Unity.FPS.Game
         Manual,
         Automatic,
         Charge,
-    }
-
-    // stores amounts of elemental damage
-    [System.Serializable]
-    public struct Damages{
-        public List<Elements> types;
-        public List<int> amounts;
-
-        public void AddDamage(Elements type, int amount)
-        {
-            // looping over already present elements
-            for (int i = 0; i < types.Count; i++){
-                if (types[i] == type) {
-
-                    // adding modified damage while keeping it equal or higher than 0
-                    amounts[i] = amounts[i] + amount < 0 ? 0 : amounts[i] + amount;
-                    
-                    // return to cancel out of function
-                    return;
-                }
-            }
-
-            // adding new damage type if not returned
-            types.Add(type);
-            amounts.Add(amount < 0 ? 0 : amount);
-        }
     }
 
     // container for all the information timers need
@@ -54,10 +30,10 @@ namespace Unity.FPS.Game
         public UnityEvent callEvent;
 
         // setting the variables
-        public TimerData(bool weapon, float delay, UnityEvent uEvent) {
-            onWeapon = weapon;
-            timeDelay = delay;
-            callEvent = uEvent;
+        public TimerData(bool _onWeapon, float _timeDelay, UnityEvent _callEvent) {
+            onWeapon = _onWeapon;
+            timeDelay = _timeDelay;
+            callEvent = _callEvent;
         }
     }
 
@@ -78,33 +54,35 @@ namespace Unity.FPS.Game
     public class WeaponController : MonoBehaviour
     {
         /* -- Damage -- */
-        [Tooltip("Amount of each damage type the weapon inflicts")]
-        [SerializeField] Damages baseDamage;
+        [Tooltip("Base Damages")]
+        [SerializedDictionary("Stat Type", "Value")] //? serialized to adjust in editor.
+        public SerializedDictionary<Elements, float> baseDamage = new SerializedDictionary<Elements, float>();
 
-        [Tooltip("Amount of each damage type the weapon inflicts")]
-        [SerializeField] Damages modDamage;
-
-        /* -- Mods -- */
-        [Tooltip("Array with all the mod groups the weapon has")]
-        [SerializeField] ModGroup[] modGroups;
+        [Tooltip("Modified Damages")]
+        [SerializedDictionary("Stat Type", "Value")] //! serialized for debugging
+        public SerializedDictionary<Elements, float> modDamage = new SerializedDictionary<Elements, float>();
 
         /* -- Stats -- */
         [Tooltip("Unmodified stats of the This weapon")]
         [SerializedDictionary("Stat Type", "Value")] //? serialized to adjust in editor.
         public SerializedDictionary<StatType, float> baseStats = new SerializedDictionary<StatType, float>();
         
-        [Tooltip("Modified stats of the This weapon")] //? not serialized because only changed in code
+        [Tooltip("Modified stats of the This weapon")] //! serialized for debugging
         [HideInInspector] Dictionary<StatType, float> modStats = new Dictionary<StatType, float>();
+
+        /* -- Mods -- */
+        [Tooltip("Array with all the mod groups the weapon has")] //? serialized to adjust in editor.
+        [SerializeField] ModGroup[] modGroups;
 
         /* -- Functions -- */        
         [Tooltip("Events that happen on certain functions")]
-        [SerializedDictionary("Function Type", "Event")]
+        [SerializedDictionary("Function Type", "Event")] //! serialized for debugging
         public SerializedDictionary<FunctionType, List<UnityEvent>> modFunctions = new SerializedDictionary<FunctionType, List<UnityEvent>>();
 
-        /* -- Timers -- */
+        /* -- Timers -- */ //! serialized for debugging
         [SerializeField] List<TimerData> modTimerData = new List<TimerData>();
 
-        // saving the timers the weapon is currently running
+        // saving the timers the weapon is currently running //! serialized for debugging
         [SerializeField] List<Coroutine> runningTimers = new List<Coroutine>();
 
         /* -- Other Weapon Stuff -- */
@@ -255,7 +233,7 @@ namespace Unity.FPS.Game
             }
 
             // resetting weapon stats
-            modDamage = baseDamage;
+            modDamage = CreateModDict(baseDamage);
             modStats = baseStats;
             modFunctions = new SerializedDictionary<FunctionType, List<UnityEvent>>();
             modTimerData = new List<TimerData>();
@@ -267,8 +245,8 @@ namespace Unity.FPS.Game
                         switch(modGroups[g].mods[m].effects[e].modType) {
                             
                             // changing / adding damage for an element
-                            case ModType.damageChange: 
-                                modDamage.AddDamage(modGroups[g].mods[m].effects[e].element, (int)modGroups[g].mods[m].effects[e].value);
+                            case ModType.damageChange:
+                                ModifyDamage(modGroups[g].mods[m].effects[e].element, (int)modGroups[g].mods[m].effects[e].value);
                                 break;
 
                             // changing weapon stats
@@ -296,6 +274,32 @@ namespace Unity.FPS.Game
 
             // starting all timers
             InitializeTimers();
+        }
+
+        // creating the modded damages dictionary from the old one
+        SerializedDictionary<Elements, float> CreateModDict(SerializedDictionary<Elements, float> oldDict)
+        {
+            // creating a new dictionary
+            SerializedDictionary<Elements, float> newDict = new SerializedDictionary<Elements, float>();
+
+            // adding all old values
+            foreach(Elements key in oldDict.Keys) {
+                newDict.Add(key, oldDict[key]);
+            }
+
+            // returning the new dictionary
+            return newDict;
+        }
+
+        // new
+        void ModifyDamage(Elements type, float value)
+        {
+            if (modDamage.ContainsKey(type)) {
+                modDamage[type] = modDamage[type] + value >= 0 ? modDamage[type] + value : 0;
+            } else {
+                if (value >= 0)
+                    modDamage.Add(type, value);
+            }
         }
 
         // modifying stats and checking if within bounds
@@ -344,16 +348,6 @@ namespace Unity.FPS.Game
         }
 
         #endregion
-
-        //! debugging
-        void SimulateShoot()
-        {
-            // invoking all events linked to firing weapon
-            if (modFunctions.ContainsKey(FunctionType.weaponFire))
-                foreach (UnityEvent uEvent in modFunctions[FunctionType.weaponFire]) {
-                    uEvent.Invoke();
-                }
-        }
 
         void Awake()
         {
@@ -415,6 +409,9 @@ namespace Unity.FPS.Game
             }
 
             IsReloading = false;
+
+            //!!
+            Debug.Log("Reloading");
         }
 
         public void StartReloadAnimation()
@@ -438,12 +435,16 @@ namespace Unity.FPS.Game
                 m_LastMuzzlePosition = WeaponMuzzle.position;
             }
 
-            //! debugging
-            if (Input.GetKeyDown(KeyCode.U)) { // loading mods
-                LoadMods();
+            // calling mod events linked to function
+            if (modFunctions.ContainsKey(FunctionType.weaponUpdate)) {
+                foreach (UnityEvent uEvent in modFunctions[FunctionType.weaponUpdate]) {
+                    uEvent.Invoke();
+                }
             }
-            if (Input.GetKeyDown(KeyCode.Y)) { // simulating firing weapon
-                SimulateShoot();
+
+            //! temporary
+            if (Input.GetKeyDown(KeyCode.U)) {
+                LoadMods();
             }
         }
 
@@ -688,6 +689,13 @@ namespace Unity.FPS.Game
 
             OnShoot?.Invoke();
             OnShootProcessed?.Invoke();
+
+            // calling mod events linked to function
+            if (modFunctions.ContainsKey(FunctionType.weaponFire)) {
+                foreach(UnityEvent uEvent in modFunctions[FunctionType.weaponFire]) {
+                    uEvent.Invoke();
+                }
+            }
         }
 
         public Vector3 GetShotDirectionWithinSpread(Transform shootTransform)
