@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using AYellowpaper.SerializedCollections;
 using Unity.FPS.Game;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Unity.FPS.AI
 {
@@ -21,6 +23,11 @@ namespace Unity.FPS.AI
                 MaterialIndex = index;
             }
         }
+
+        [Header("Mod Variables")]
+        [Tooltip("The chance a mod drops on death of a certain rarity")]
+        [SerializedDictionary("Rarity", "Spawn Chance")]
+        public SerializedDictionary<Rarity, int> rarityChance = new();
 
         [Header("Parameters")]
         [Tooltip("The Y height at which the enemy will be automatically killed (if it falls off of the level)")]
@@ -369,7 +376,8 @@ namespace Unity.FPS.AI
             // loot an object
             if (TryDropItem())
             {
-                Instantiate(LootPrefab, transform.position, Quaternion.identity);
+                // now handled with events
+                //Instantiate(LootPrefab, transform.position, Quaternion.identity);
             }
 
             // this will call the OnDestroy function

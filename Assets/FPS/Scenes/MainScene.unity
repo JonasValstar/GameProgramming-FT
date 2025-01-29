@@ -256,6 +256,7 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
     value: 0
+  prefab: {fileID: 0}
 --- !u!4 &253942795
 Transform:
   m_ObjectHideFlags: 0
@@ -1499,6 +1500,46 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2729281213873661534}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1809430681 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1315839542190839943, guid: c996b53e9f849234393d1e90f68d1679,
+    type: 3}
+  m_PrefabInstance: {fileID: 4008933581619590512}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1809430691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1809430681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ab7b1ae95dfbc42a00d5362c4bfa3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mods:
+    _serializedList:
+    - Key: 1
+      Value:
+      - {fileID: 1149694783101090979, guid: e1b83574b682f2341a3197e321e9fe2a, type: 3}
+      - {fileID: 1149694783101090979, guid: 6d8fccdf64e732548b6e809a1729bee5, type: 3}
+    - Key: 2
+      Value:
+      - {fileID: 1149694783101090979, guid: 358ee514313ca414db349fc115f75591, type: 3}
+      - {fileID: 1149694783101090979, guid: a33d9a7e32b041a4da0bb45cb1345a8d, type: 3}
+    - Key: 3
+      Value:
+      - {fileID: 1149694783101090979, guid: 414b66d107e973146bb952b5b09245bc, type: 3}
+      - {fileID: 1149694783101090979, guid: 9409d97b370b9b34f928f69209564243, type: 3}
+    - Key: 4
+      Value:
+      - {fileID: 1149694783101090979, guid: de3b4aa0aa93b2d47ada86d06199bce1, type: 3}
+      - {fileID: 1149694783101090979, guid: 74edb4d340182a54b9c518742a8b8de2, type: 3}
+    - Key: 5
+      Value:
+      - {fileID: 1149694783101090979, guid: 5292c96d790370147a57a1a7dcc18c7d, type: 3}
+      - {fileID: 1149694783101090979, guid: 1073f0e4561a05a44928bd0bc99f0e5b, type: 3}
 --- !u!4 &1880561205 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5963937743390997973, guid: 7042f8fe21debc944b5bdc894f478d63,
@@ -3821,6 +3862,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: VFX_Dust
       objectReference: {fileID: 0}
+    - target: {fileID: 28905003217567911, guid: ecdbb7f81f59b934cb72306019ee7a41,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 28905003217567913, guid: ecdbb7f81f59b934cb72306019ee7a41,
         type: 3}
       propertyPath: m_RootOrder
@@ -4371,6 +4417,66 @@ PrefabInstance:
         type: 3}
       propertyPath: baseDamage._serializedList.Array.data[0].Value
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9087143436424816424, guid: 25a1b0efadb966e44889fce712c8ff8d,
+        type: 3}
+      propertyPath: rarityChance._serializedList.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9087143436424816424, guid: 25a1b0efadb966e44889fce712c8ff8d,
+        type: 3}
+      propertyPath: rarityChance._serializedList.Array.data[0].Key
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9087143436424816424, guid: 25a1b0efadb966e44889fce712c8ff8d,
+        type: 3}
+      propertyPath: rarityChance._serializedList.Array.data[1].Key
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9087143436424816424, guid: 25a1b0efadb966e44889fce712c8ff8d,
+        type: 3}
+      propertyPath: rarityChance._serializedList.Array.data[2].Key
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9087143436424816424, guid: 25a1b0efadb966e44889fce712c8ff8d,
+        type: 3}
+      propertyPath: rarityChance._serializedList.Array.data[3].Key
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 9087143436424816424, guid: 25a1b0efadb966e44889fce712c8ff8d,
+        type: 3}
+      propertyPath: rarityChance._serializedList.Array.data[4].Key
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9087143436424816424, guid: 25a1b0efadb966e44889fce712c8ff8d,
+        type: 3}
+      propertyPath: rarityChance._serializedList.Array.data[5].Key
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9087143436424816424, guid: 25a1b0efadb966e44889fce712c8ff8d,
+        type: 3}
+      propertyPath: rarityChance._serializedList.Array.data[0].Value
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 9087143436424816424, guid: 25a1b0efadb966e44889fce712c8ff8d,
+        type: 3}
+      propertyPath: rarityChance._serializedList.Array.data[1].Value
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 9087143436424816424, guid: 25a1b0efadb966e44889fce712c8ff8d,
+        type: 3}
+      propertyPath: rarityChance._serializedList.Array.data[2].Value
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 9087143436424816424, guid: 25a1b0efadb966e44889fce712c8ff8d,
+        type: 3}
+      propertyPath: rarityChance._serializedList.Array.data[3].Value
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 9087143436424816424, guid: 25a1b0efadb966e44889fce712c8ff8d,
+        type: 3}
+      propertyPath: rarityChance._serializedList.Array.data[4].Value
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5721,7 +5827,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1315839542190839943, guid: c996b53e9f849234393d1e90f68d1679,
+        type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 1809430691}
   m_SourcePrefab: {fileID: 100100000, guid: c996b53e9f849234393d1e90f68d1679, type: 3}
 --- !u!1001 &9217268748774167426
 PrefabInstance:

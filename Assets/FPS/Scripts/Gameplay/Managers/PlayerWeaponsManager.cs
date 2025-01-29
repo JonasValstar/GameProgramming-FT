@@ -142,6 +142,12 @@ namespace Unity.FPS.Gameplay
             weapon.LoadMods();
         }
 
+        // picking up a mod
+        public void PickUpMod(Mod mod)
+        {
+            availableMods.Add(mod);
+        }
+
         // checking if weapon has a matching group-type as mod.
         int matchModToGroup(WeaponController weapon, Mod mod)
         {
