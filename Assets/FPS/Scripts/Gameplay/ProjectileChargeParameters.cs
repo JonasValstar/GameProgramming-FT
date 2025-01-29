@@ -28,7 +28,7 @@ namespace Unity.FPS.Gameplay
             ProjectileStandard proj = GetComponent<ProjectileStandard>();
             if (proj)
             {
-                proj.Damage = Damage.GetValueFromRatio(m_ProjectileBase.InitialCharge);
+                //proj.Damage = Damage.GetValueFromRatio(m_ProjectileBase.InitialCharge);
                 proj.Radius = Radius.GetValueFromRatio(m_ProjectileBase.InitialCharge);
                 proj.Speed = Speed.GetValueFromRatio(m_ProjectileBase.InitialCharge);
                 proj.GravityDownAcceleration =

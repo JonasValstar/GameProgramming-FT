@@ -1,11 +1,16 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using AYellowpaper.SerializedCollections;
+using UnityEngine;
 
 namespace Unity.FPS.Game
 {
     public class Damageable : MonoBehaviour
     {
-        [Tooltip("Multiplier to apply to the received damage")]
-        public float DamageMultiplier = 1f;
+        [Tooltip("Multiplier to apply to the total received damage")]
+        public float critMultiplier = 1f;
+
+        [Tooltip("Multiplier applied to the individually received damage types")]
+        public SerializedDictionary<Elements, float> elementMults;
 
         [Range(0, 1)] [Tooltip("Multiplier to apply to self damage")]
         public float SensibilityToSelfdamage = 0.5f;
@@ -22,16 +27,19 @@ namespace Unity.FPS.Game
             }
         }
 
-        public void InflictDamage(float damage, bool isExplosionDamage, GameObject damageSource)
+        public void InflictDamage(Dictionary<Elements, float> damage, float critChance, bool isExplosionDamage, GameObject damageSource)
         {
             if (Health)
             {
-                var totalDamage = damage;
+                // calculate total damage
+                float totalDamage = 0;
+                foreach(Elements type in damage.Keys) {
+                    totalDamage += damage[type] * (elementMults.ContainsKey(type) ? elementMults[type] : 1);
+                }
 
-                // skip the crit multiplier if it's from an explosion
-                if (!isExplosionDamage)
-                {
-                    totalDamage *= DamageMultiplier;
+                // calculate if crit
+                if (Random.Range(0, 100f) <= critChance) {
+                    totalDamage *= critMultiplier;
                 }
 
                 // potentially reduce damages if inflicted by self

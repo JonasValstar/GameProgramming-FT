@@ -52,12 +52,13 @@ public enum FunctionType {
 // All stats a weapon has
 public enum StatType {
     critChance,
-    reloadTime,
-    bulletsPerShot,
     fireDelay,
-    spread,
-    bulletVelocity,
-    bulletAcceleration,
-    magCapacity,
-    ammoCapacity
+    spreadAngle,
+    bulletsPerShot,
+    recoilForce,
+    maxAmmo,
+    reloadSpeed,
+    reloadDelay,
+    bulletVel,
+    bulletAcc 
 }

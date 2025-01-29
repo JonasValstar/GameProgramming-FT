@@ -60,7 +60,7 @@ namespace Unity.FPS.Game
 
         [Tooltip("Modified Damages")]
         [SerializedDictionary("Stat Type", "Value")] //! serialized for debugging
-        public SerializedDictionary<Elements, float> modDamage = new SerializedDictionary<Elements, float>();
+        public Dictionary<Elements, float> modDamage = new Dictionary<Elements, float>();
 
         /* -- Stats -- */
         [Tooltip("Unmodified stats of the This weapon")]
@@ -68,7 +68,7 @@ namespace Unity.FPS.Game
         public SerializedDictionary<StatType, float> baseStats = new SerializedDictionary<StatType, float>();
         
         [Tooltip("Modified stats of the This weapon")] //! serialized for debugging
-        [HideInInspector] Dictionary<StatType, float> modStats = new Dictionary<StatType, float>();
+        [HideInInspector] public Dictionary<StatType, float> modStats = new Dictionary<StatType, float>();
 
         /* -- Mods -- */
         [Tooltip("Array with all the mod groups the weapon has")] //? serialized to adjust in editor.
@@ -80,7 +80,7 @@ namespace Unity.FPS.Game
         public SerializedDictionary<FunctionType, List<UnityEvent>> modFunctions = new SerializedDictionary<FunctionType, List<UnityEvent>>();
 
         /* -- Timers -- */ //! serialized for debugging
-        [SerializeField] List<TimerData> modTimerData = new List<TimerData>();
+        public List<TimerData> modTimerData = new List<TimerData>();
 
         // saving the timers the weapon is currently running //! serialized for debugging
         [SerializeField] List<Coroutine> runningTimers = new List<Coroutine>();
@@ -110,18 +110,6 @@ namespace Unity.FPS.Game
 
         [Tooltip("The projectile prefab")] public ProjectileBase ProjectilePrefab;
 
-        [Tooltip("Minimum duration between two shots")]
-        public float DelayBetweenShots = 0.5f;
-
-        [Tooltip("Angle for the cone in which the bullets will be shot randomly (0 means no spread at all)")]
-        public float BulletSpreadAngle = 0f;
-
-        [Tooltip("Amount of bullets per shot")]
-        public int BulletsPerShot = 1;
-
-        [Tooltip("Force that will push back the weapon after each shot")] [Range(0f, 2f)]
-        public float RecoilForce = 1;
-
         [Tooltip("Ratio of the default FOV that this weapon applies while aiming")] [Range(0f, 1f)]
         public float AimZoomRatio = 1f;
 
@@ -143,14 +131,6 @@ namespace Unity.FPS.Game
         [Range(0.0f, 5.0f)] public float ShellCasingEjectionForce = 2.0f;
         [Tooltip("Maximum number of shell that can be spawned before reuse")]
         [Range(1, 30)] public int ShellPoolSize = 1;
-        [Tooltip("Amount of ammo reloaded per second")]
-        public float AmmoReloadRate = 1f;
-
-        [Tooltip("Delay after the last shot before starting to reload")]
-        public float AmmoReloadDelay = 2f;
-
-        [Tooltip("Maximum amount of ammo in the gun")]
-        public int MaxAmmo = 8;
 
         [Header("Charging parameters (charging weapons only)")]
         [Tooltip("Trigger a shot when maximum charge is reached")]
@@ -208,7 +188,7 @@ namespace Unity.FPS.Game
 
         public float GetAmmoNeededToShoot() =>
             (ShootType != WeaponShootType.Charge ? 1f : Mathf.Max(1f, AmmoUsedOnStartCharge)) /
-            (MaxAmmo * BulletsPerShot);
+            (modStats[StatType.maxAmmo] * modStats[StatType.bulletsPerShot]);
 
         public int GetCarriedPhysicalBullets() => m_CarriedPhysicalBullets;
         public int GetCurrentAmmo() => Mathf.FloorToInt(m_CurrentAmmo);
@@ -310,14 +290,14 @@ namespace Unity.FPS.Game
 
             // checking for unintended value
             modStats[StatType.critChance] = Mathf.Clamp(modStats[StatType.critChance], 0, 100); //? critChance: between 0% and 100%
-            modStats[StatType.reloadTime] = Mathf.Clamp(modStats[StatType.reloadTime], 0.01f, Mathf.Infinity); //? reload time: bigger than 0.01 sec
-            modStats[StatType.bulletsPerShot] = Mathf.Clamp(modStats[StatType.bulletsPerShot], 1, Mathf.Infinity); //? bullets per shot: more than 1 bullet
             modStats[StatType.fireDelay] = Mathf.Clamp(modStats[StatType.fireDelay], 0.01f, Mathf.Infinity); //? fireDelay: more than 0.01 sec
-            modStats[StatType.spread] = Mathf.Clamp(modStats[StatType.spread], 0, 360); //? spread: between 0 and 360 degrees
-            modStats[StatType.bulletVelocity] = Mathf.Clamp(modStats[StatType.bulletVelocity], 0.01f, Mathf.Infinity); //? bullet speed: more than 0.01 m/s
+            modStats[StatType.spreadAngle] = Mathf.Clamp(modStats[StatType.spreadAngle], 0, 360); //? spread: between 0 and 360 degrees
+            modStats[StatType.bulletsPerShot] = Mathf.Clamp(modStats[StatType.bulletsPerShot], 1, Mathf.Infinity); //? bullets per shot: more than 1 bullet
+            modStats[StatType.recoilForce] = Mathf.Clamp(modStats[StatType.recoilForce], 0, Mathf.Infinity); //? bullets per shot: more than 1 bullet
+            modStats[StatType.maxAmmo] = Mathf.Clamp(modStats[StatType.maxAmmo], 1, Mathf.Infinity); //? ammo Capacity: More than 1 bullet
+            modStats[StatType.reloadSpeed] = Mathf.Clamp(modStats[StatType.reloadSpeed], 0.01f, Mathf.Infinity); //? reload time: bigger than 0.01 sec
+            modStats[StatType.bulletVel] = Mathf.Clamp(modStats[StatType.bulletVel], 0.01f, Mathf.Infinity); //? bullet speed: more than 0.01 m/s
             //? bullet acceleration: not limited
-            modStats[StatType.magCapacity] = Mathf.Clamp(modStats[StatType.magCapacity], 1, Mathf.Infinity); //? Mag capacity: more than 1 bullet
-            modStats[StatType.ammoCapacity] = Mathf.Clamp(modStats[StatType.ammoCapacity], 1, Mathf.Infinity); //? ammo Capacity: More than 1 bullet
         }
 
         // starting and saving weapon timers
@@ -351,7 +331,10 @@ namespace Unity.FPS.Game
 
         void Awake()
         {
-            m_CurrentAmmo = MaxAmmo;
+            // loading mods
+            LoadMods();
+
+            m_CurrentAmmo = modStats[StatType.maxAmmo];
             m_CarriedPhysicalBullets = HasPhysicalBullets ? ClipSize : 0;
             m_LastMuzzlePosition = WeaponMuzzle.position;
 
@@ -379,10 +362,10 @@ namespace Unity.FPS.Game
                     shell.SetActive(false);
                     m_PhysicalAmmoPool.Enqueue(shell.GetComponent<Rigidbody>());
                 }
-            }
+            }            
         }
 
-        public void AddCarriablePhysicalBullets(int count) => m_CarriedPhysicalBullets = Mathf.Max(m_CarriedPhysicalBullets + count, MaxAmmo);
+        public void AddCarriablePhysicalBullets(int count) => m_CarriedPhysicalBullets = Mathf.Max(m_CarriedPhysicalBullets + count, (int)modStats[StatType.maxAmmo]);
 
         void ShootShell()
         {
@@ -450,13 +433,13 @@ namespace Unity.FPS.Game
 
         void UpdateAmmo()
         {
-            if (AutomaticReload && m_LastTimeShot + AmmoReloadDelay < Time.time && m_CurrentAmmo < MaxAmmo && !IsCharging)
+            if (AutomaticReload && m_LastTimeShot + modStats[StatType.reloadDelay] < Time.time && m_CurrentAmmo < modStats[StatType.maxAmmo] && !IsCharging)
             {
                 // reloads weapon over time
-                m_CurrentAmmo += AmmoReloadRate * Time.deltaTime;
+                m_CurrentAmmo += modStats[StatType.reloadSpeed] * Time.deltaTime;
 
                 // limits ammo to max value
-                m_CurrentAmmo = Mathf.Clamp(m_CurrentAmmo, 0, MaxAmmo);
+                m_CurrentAmmo = Mathf.Clamp(m_CurrentAmmo, 0, modStats[StatType.maxAmmo]);
 
                 IsCooling = true;
             }
@@ -465,13 +448,13 @@ namespace Unity.FPS.Game
                 IsCooling = false;
             }
 
-            if (MaxAmmo == Mathf.Infinity)
+            if (modStats[StatType.maxAmmo] == Mathf.Infinity)
             {
                 CurrentAmmoRatio = 1f;
             }
             else
             {
-                CurrentAmmoRatio = m_CurrentAmmo / MaxAmmo;
+                CurrentAmmoRatio = m_CurrentAmmo / modStats[StatType.maxAmmo];
             }
         }
 
@@ -545,9 +528,9 @@ namespace Unity.FPS.Game
 
         public void UseAmmo(float amount)
         {
-            m_CurrentAmmo = Mathf.Clamp(m_CurrentAmmo - amount, 0f, MaxAmmo);
+            m_CurrentAmmo = Mathf.Clamp(m_CurrentAmmo - amount, 0f, modStats[StatType.maxAmmo]);
             m_CarriedPhysicalBullets -= Mathf.RoundToInt(amount);
-            m_CarriedPhysicalBullets = Mathf.Clamp(m_CarriedPhysicalBullets, 0, MaxAmmo);
+            m_CarriedPhysicalBullets = Mathf.Clamp(m_CarriedPhysicalBullets, 0, (int)modStats[StatType.maxAmmo]);
             m_LastTimeShot = Time.time;
         }
 
@@ -594,7 +577,7 @@ namespace Unity.FPS.Game
         bool TryShoot()
         {
             if (m_CurrentAmmo >= 1f
-                && m_LastTimeShot + DelayBetweenShots < Time.time)
+                && m_LastTimeShot + modStats[StatType.fireDelay] < Time.time)
             {
                 HandleShoot();
                 m_CurrentAmmo -= 1f;
@@ -609,8 +592,8 @@ namespace Unity.FPS.Game
         {
             if (!IsCharging
                 && m_CurrentAmmo >= AmmoUsedOnStartCharge
-                && Mathf.FloorToInt((m_CurrentAmmo - AmmoUsedOnStartCharge) * BulletsPerShot) > 0
-                && m_LastTimeShot + DelayBetweenShots < Time.time)
+                && Mathf.FloorToInt((m_CurrentAmmo - AmmoUsedOnStartCharge) * modStats[StatType.bulletsPerShot]) > 0
+                && m_LastTimeShot + modStats[StatType.fireDelay] < Time.time)
             {
                 UseAmmo(AmmoUsedOnStartCharge);
 
@@ -641,8 +624,8 @@ namespace Unity.FPS.Game
         void HandleShoot()
         {
             int bulletsPerShotFinal = ShootType == WeaponShootType.Charge
-                ? Mathf.CeilToInt(CurrentCharge * BulletsPerShot)
-                : BulletsPerShot;
+                ? Mathf.CeilToInt(CurrentCharge * (int)modStats[StatType.bulletsPerShot])
+                : (int)modStats[StatType.bulletsPerShot];
 
             // spawn all bullets with random direction
             for (int i = 0; i < bulletsPerShotFinal; i++)
@@ -700,7 +683,7 @@ namespace Unity.FPS.Game
 
         public Vector3 GetShotDirectionWithinSpread(Transform shootTransform)
         {
-            float spreadAngleRatio = BulletSpreadAngle / 180f;
+            float spreadAngleRatio = modStats[StatType.spreadAngle] / 180f;
             Vector3 spreadWorldDirection = Vector3.Slerp(shootTransform.forward, UnityEngine.Random.insideUnitSphere,
                 spreadAngleRatio);
 

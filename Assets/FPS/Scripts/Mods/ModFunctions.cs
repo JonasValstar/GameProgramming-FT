@@ -5,15 +5,22 @@ using UnityEngine;
 public class ModFunctions : MonoBehaviour
 {
     /// <summary>
+    /// Send a message to be displayed in the console
+    /// </summary>
+    /// <param name="message">The message that is debugged into the console</param>
+    public void DebugMessage(string message)
+    {
+        // debugging a message
+        Debug.Log(message);
+    }
+
+    /// <summary>
     /// Heal the Player for a set amount of health 
     /// </summary>
     /// <param name="amount">Amount of healing</param>
     public void Heal(int amount)
     {
-        // healing
-
-        //? debugging to see if the code works
-        Debug.Log($"Healed: {amount}");
+        // getting the health component
     }
 
     /// <summary>
@@ -22,10 +29,7 @@ public class ModFunctions : MonoBehaviour
     /// <param name="item">Item that is Instantiated</param>
     public void Drop(GameObject item)
     {
-        // healing
-
-        //? debugging to see if the code works
-        Debug.Log($"Dropped: {item}");
+        //TODO: Dropping item
     }
 
     /// <summary>
@@ -34,9 +38,6 @@ public class ModFunctions : MonoBehaviour
     /// <param name="direction">The amount the player is phased in the direction of the camera</param>
     public void Phase(float distance)
     {
-        // Phasing
-
-        //? debugging to see if the code works
-        Debug.Log($"Phased the player forward: {distance}");
+        //TODO: Phasing the player forward
     }
 }

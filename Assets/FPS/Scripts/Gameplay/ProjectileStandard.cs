@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Unity.FPS.Game;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Unity.FPS.Gameplay
 {
@@ -33,9 +34,6 @@ namespace Unity.FPS.Gameplay
         [Tooltip("Layers this projectile can collide with")]
         public LayerMask HittableLayers = -1;
 
-        [Header("Movement")] [Tooltip("Speed of the projectile")]
-        public float Speed = 20f;
-
         [Tooltip("Downward acceleration from gravity")]
         public float GravityDownAcceleration = 0f;
 
@@ -46,8 +44,8 @@ namespace Unity.FPS.Gameplay
         [Tooltip("Determines if the projectile inherits the velocity that the weapon's muzzle had when firing")]
         public bool InheritWeaponVelocity = false;
 
-        [Header("Damage")] [Tooltip("Damage of the projectile")]
-        public float Damage = 40f;
+        //[Header("Damage")] [Tooltip("Damage of the projectile")]
+        //public float Damage = 40f;
 
         [Tooltip("Area of damage. Keep empty if you don<t want area damage")]
         public DamageArea AreaOfDamage;
@@ -63,6 +61,8 @@ namespace Unity.FPS.Gameplay
         Vector3 m_TrajectoryCorrectionVector;
         Vector3 m_ConsumedTrajectoryCorrectionVector;
         List<Collider> m_IgnoredColliders;
+
+        Vector3 forwardDirection;
 
         const QueryTriggerInteraction k_TriggerInteraction = QueryTriggerInteraction.Collide;
 
@@ -84,6 +84,8 @@ namespace Unity.FPS.Gameplay
             m_Velocity = transform.forward * Speed;
             m_IgnoredColliders = new List<Collider>();
             transform.position += m_ProjectileBase.InheritedMuzzleVelocity * Time.deltaTime;
+            
+            forwardDirection = transform.forward;
 
             // Ignore colliders of owner
             Collider[] ownerColliders = m_ProjectileBase.Owner.GetComponentsInChildren<Collider>();
@@ -124,6 +126,7 @@ namespace Unity.FPS.Gameplay
         void Update()
         {
             // Move
+            m_Velocity += forwardDirection * Acceleration * Time.deltaTime;
             transform.position += m_Velocity * Time.deltaTime;
             if (InheritWeaponVelocity)
             {
@@ -195,6 +198,13 @@ namespace Unity.FPS.Gameplay
             }
 
             m_LastRootPosition = Root.position;
+
+            // invoking OnUpdate event
+            if (functionEvents.ContainsKey(FunctionType.bulletUpdate)) {
+                foreach(UnityEvent uEvent in functionEvents[FunctionType.bulletUpdate]) {
+                    uEvent.Invoke();
+                }
+            }
         }
 
         bool IsHitValid(RaycastHit hit)
@@ -226,8 +236,8 @@ namespace Unity.FPS.Gameplay
             if (AreaOfDamage)
             {
                 // area damage
-                AreaOfDamage.InflictDamageInArea(Damage, point, HittableLayers, k_TriggerInteraction,
-                    m_ProjectileBase.Owner);
+                //AreaOfDamage.InflictDamageInArea(Damage, point, HittableLayers, k_TriggerInteraction,
+                //    m_ProjectileBase.Owner);
             }
             else
             {
@@ -235,7 +245,15 @@ namespace Unity.FPS.Gameplay
                 Damageable damageable = collider.GetComponent<Damageable>();
                 if (damageable)
                 {
-                    damageable.InflictDamage(Damage, false, m_ProjectileBase.Owner);
+                    // inflicting damage
+                    damageable.InflictDamage(Damage, critChance, false, m_ProjectileBase.Owner);
+                    
+                    // invoking OnImpact events
+                    if (functionEvents.ContainsKey(FunctionType.bulletImpact)) {
+                        foreach(UnityEvent uEvent in functionEvents[FunctionType.bulletImpact]) {
+                            uEvent.Invoke();
+                        }
+                    }
                 }
             }
 

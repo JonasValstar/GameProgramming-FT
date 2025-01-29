@@ -38,8 +38,8 @@ namespace Unity.FPS.Game
             foreach (Damageable uniqueDamageable in uniqueDamagedHealths.Values)
             {
                 float distance = Vector3.Distance(uniqueDamageable.transform.position, transform.position);
-                uniqueDamageable.InflictDamage(
-                    damage * DamageRatioOverDistance.Evaluate(distance / AreaOfEffectDistance), true, owner);
+                //uniqueDamageable.InflictDamage( //! NOT USED ANYWAYS
+                //    damage * DamageRatioOverDistance.Evaluate(distance / AreaOfEffectDistance), true, owner);
             }
         }
 
