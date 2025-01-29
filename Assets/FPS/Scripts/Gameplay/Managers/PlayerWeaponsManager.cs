@@ -17,6 +17,9 @@ namespace Unity.FPS.Gameplay
             PutUpNew,
         }
 
+        [Tooltip("list of currently collected mods")]
+        [SerializeField] private List<Mod> availableMods = new List<Mod>();
+
         [Tooltip("List of weapon the player will start with")]
         public List<WeaponController> StartingWeapons = new List<WeaponController>();
 
@@ -93,6 +96,66 @@ namespace Unity.FPS.Gameplay
         float m_TimeStartedWeaponSwitch;
         WeaponSwitchState m_WeaponSwitchState;
         int m_WeaponSwitchNewWeaponIndex;
+
+        #region ModFunctions
+
+        //! debugging variable
+        Mod justEquipped;
+
+        // attaching mod to active weapon
+        public void AttachMod(Mod mod)
+        {
+            // getting the currently active weapon
+            WeaponController weapon = GetActiveWeapon();
+
+            // checking if mod can be attached
+            int index = matchModToGroup(weapon, mod);
+
+            // attaching mod
+            if (index >= 0) {
+                availableMods.Remove(mod);
+                Mod newMod = Instantiate(mod, weapon.modGroups[index].transform);
+                newMod.prefab = mod;
+                weapon.modGroups[index].mods.Add(newMod);
+                justEquipped = newMod;
+            }
+
+            // loading mods
+            weapon.LoadMods();
+        }
+
+        // removing mod from active weapon
+        public void RemoveMod(Mod mod)
+        {
+            // getting the currently active weapon
+            WeaponController weapon = GetActiveWeapon();
+
+            // getting the mods group
+            int index = matchModToGroup(weapon, mod);
+
+            if (index >= 0)
+                weapon.modGroups[index].mods.Remove(mod);
+                availableMods.Add(mod.prefab);
+                Destroy(mod.gameObject);
+
+            // loading mods
+            weapon.LoadMods();
+        }
+
+        // checking if weapon has a matching group-type as mod.
+        int matchModToGroup(WeaponController weapon, Mod mod)
+        {
+            // finding if the mods group match
+            for (int i = 0; i < weapon.modGroups.Length; i++) {
+                if (weapon.modGroups[i].type == mod.type)
+                    return i;
+            }
+
+            // returning a false
+            return -1;
+        }
+
+        #endregion
 
         void Start()
         {
@@ -188,8 +251,15 @@ namespace Unity.FPS.Gameplay
                     }
                 }
             }
-        }
 
+            //! debugging attaching and detaching
+            if (Input.GetKeyDown(KeyCode.M)) {
+                AttachMod(availableMods[0]);
+            }
+            if (Input.GetKeyDown(KeyCode.N)) {
+                RemoveMod(justEquipped);
+            }
+        }
 
         // Update various animated features in LateUpdate because it needs to override the animated arm position
         void LateUpdate()

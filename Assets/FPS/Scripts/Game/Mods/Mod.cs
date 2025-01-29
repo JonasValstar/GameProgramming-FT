@@ -9,6 +9,9 @@ public class Mod : MonoBehaviour
     public Rarity rarity;
     [Space]
     public ModEffect[] effects;
+
+    // remember the original prefab
+    public Mod prefab;
 }
 
 [System.Serializable]

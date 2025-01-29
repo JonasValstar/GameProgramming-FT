@@ -56,34 +56,34 @@ namespace Unity.FPS.Game
         /* -- Damage -- */
         [Tooltip("Base Damages")]
         [SerializedDictionary("Stat Type", "Value")] //? serialized to adjust in editor.
-        public SerializedDictionary<Elements, float> baseDamage = new SerializedDictionary<Elements, float>();
+        public SerializedDictionary<Elements, float> baseDamage = new();
 
         [Tooltip("Modified Damages")]
         [SerializedDictionary("Stat Type", "Value")] //! serialized for debugging
-        public Dictionary<Elements, float> modDamage = new Dictionary<Elements, float>();
+        public Dictionary<Elements, float> modDamage = new();
 
         /* -- Stats -- */
         [Tooltip("Unmodified stats of the This weapon")]
         [SerializedDictionary("Stat Type", "Value")] //? serialized to adjust in editor.
-        public SerializedDictionary<StatType, float> baseStats = new SerializedDictionary<StatType, float>();
+        public SerializedDictionary<StatType, float> baseStats = new();
         
         [Tooltip("Modified stats of the This weapon")] //! serialized for debugging
-        [HideInInspector] public Dictionary<StatType, float> modStats = new Dictionary<StatType, float>();
+        public SerializedDictionary<StatType, float> modStats = new();
 
         /* -- Mods -- */
         [Tooltip("Array with all the mod groups the weapon has")] //? serialized to adjust in editor.
-        [SerializeField] ModGroup[] modGroups;
+        public ModGroup[] modGroups;
 
         /* -- Functions -- */        
         [Tooltip("Events that happen on certain functions")]
         [SerializedDictionary("Function Type", "Event")] //! serialized for debugging
-        public SerializedDictionary<FunctionType, List<UnityEvent>> modFunctions = new SerializedDictionary<FunctionType, List<UnityEvent>>();
+        public SerializedDictionary<FunctionType, List<UnityEvent>> modFunctions = new();
 
         /* -- Timers -- */ //! serialized for debugging
-        public List<TimerData> modTimerData = new List<TimerData>();
+        public List<TimerData> modTimerData = new();
 
         // saving the timers the weapon is currently running //! serialized for debugging
-        [SerializeField] List<Coroutine> runningTimers = new List<Coroutine>();
+        [SerializeField] List<Coroutine> runningTimers = new();
 
         /* -- Other Weapon Stuff -- */
         [Header("Information")] [Tooltip("The name that will be displayed in the UI for this weapon")]
@@ -204,7 +204,7 @@ namespace Unity.FPS.Game
         #region Loading Mods
 
         // loading all mods into the modified stats
-        void LoadMods()
+        public void LoadMods()
         {
             //! temporary before UI is implemented
             // stopping timers
@@ -214,7 +214,7 @@ namespace Unity.FPS.Game
 
             // resetting weapon stats
             modDamage = CreateModDict(baseDamage);
-            modStats = baseStats;
+            modStats = CreateStatDict(baseStats);
             modFunctions = new SerializedDictionary<FunctionType, List<UnityEvent>>();
             modTimerData = new List<TimerData>();
 
@@ -260,10 +260,25 @@ namespace Unity.FPS.Game
         SerializedDictionary<Elements, float> CreateModDict(SerializedDictionary<Elements, float> oldDict)
         {
             // creating a new dictionary
-            SerializedDictionary<Elements, float> newDict = new SerializedDictionary<Elements, float>();
+            SerializedDictionary<Elements, float> newDict = new();
 
             // adding all old values
             foreach(Elements key in oldDict.Keys) {
+                newDict.Add(key, oldDict[key]);
+            }
+
+            // returning the new dictionary
+            return newDict;
+        }
+
+        // creating the modded damages dictionary from the old one
+        SerializedDictionary<StatType, float> CreateStatDict(SerializedDictionary<StatType, float> oldDict)
+        {
+            // creating a new dictionary
+            SerializedDictionary<StatType, float> newDict = new();
+
+            // adding all old values
+            foreach(StatType key in oldDict.Keys) {
                 newDict.Add(key, oldDict[key]);
             }
 
