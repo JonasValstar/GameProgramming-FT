@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 using Unity.FPS.Game;
 using UnityEditor.EditorTools;
 using UnityEngine;
@@ -19,6 +20,8 @@ namespace Unity.FPS.Gameplay
 
         [Tooltip("list of currently collected mods")]
         [SerializeField] public List<Mod> availableMods = new List<Mod>();
+
+        [SerializeField] TMP_Text groupUIText;
 
         [Tooltip("List of weapon the player will start with")]
         public List<WeaponController> StartingWeapons = new List<WeaponController>();
@@ -331,6 +334,13 @@ namespace Unity.FPS.Gameplay
                 {
                     m_WeaponSwitchState = WeaponSwitchState.PutDownPrevious;
                 }
+
+                //? update UI
+                groupUIText.text = $"Groups: ";
+                foreach (ModGroup group in GetWeaponAtSlotIndex(newWeaponIndex).modGroups) {
+                    groupUIText.text = $"{groupUIText.text} {group.type},";
+                }
+                groupUIText.text.Remove(groupUIText.text.Length - 1);
             }
         }
 

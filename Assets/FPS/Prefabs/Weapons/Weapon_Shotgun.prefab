@@ -195,9 +195,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseDamage:
-    _serializedList: []
+    _serializedList:
+    - Key: 0
+      Value: 10
   baseStats:
-    _serializedList: []
+    _serializedList:
+    - Key: 0
+      Value: 1
+    - Key: 1
+      Value: 1
+    - Key: 2
+      Value: 1
+    - Key: 3
+      Value: 1
+    - Key: 4
+      Value: 1
+    - Key: 5
+      Value: 1
+    - Key: 6
+      Value: 1
+    - Key: 7
+      Value: 1
+    - Key: 8
+      Value: 1
+    - Key: 9
+      Value: 1
   modStats:
     _serializedList: []
   modGroups:

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.FPS.AI;
 using Unity.FPS.Game;
 using Unity.FPS.Gameplay;
@@ -10,7 +11,7 @@ public class PlayerLevelManager : MonoBehaviour
 {
     // the nodes that can be unlocked with tokens
     [System.Serializable]
-    public struct Node
+    public class Node
     {
         // storing connected nodes
         public List<Node> nodes;
@@ -75,8 +76,18 @@ public class PlayerLevelManager : MonoBehaviour
     [Tooltip("The canvas of the level UI")]
     [SerializeField] NodeUIElement nodeElementPrefab;
 
+    [Tooltip("The line prefab to create node links")]
+    [SerializeField] RectTransform linePrefab;
+
+    [Tooltip("The text field for the xp counter")]
+    [SerializeField] TMP_Text xpCounter;
+
+    [Tooltip("The text field for the level counter")]
+    [SerializeField] TMP_Text levelCounter;
+
     public bool isOpen = false;
     List<NodeUIElement> items = new();
+    List<Node> itemNodes = new();
     PlayerInputHandler m_inputHandler;
 
     //! Testing
@@ -96,22 +107,36 @@ public class PlayerLevelManager : MonoBehaviour
             UnlockTokens++;
             xp -= xpThreshold;
         }
+
+        // update UI
+        xpCounter.text = $"XP: {xp}/{xpThreshold}";
+        levelCounter.text = $"Levels: {UnlockTokens}";
     }
 
     // unlocking node
     public void UnlockNode(Node unlockedNode)
     {
-        // setting node to unlocked
-        Node newNode = new() {unlocked = true, unlockable = false, nodes = unlockedNode.nodes, nodeWeapon = unlockedNode.nodeWeapon};
-        unlockedNode = newNode;
+        if (UnlockTokens >= 1) {
+            
+            // removing a token
+            UnlockTokens--;
 
-        // setting its children to unlockable
-        foreach (Node child in unlockedNode.nodes) {
-            //child.MakeUnlockable();
+            // setting node to unlocked
+            unlockedNode.unlocked = true;
+            unlockedNode.unlockable = false;
+
+            // setting its children to unlockable
+            foreach (Node child in unlockedNode.nodes) {
+                child.unlockable = true;
+            }
+
+            // add the weapon
+            m_inputHandler.GetComponent<PlayerWeaponsManager>().AddWeapon(unlockedNode.nodeWeapon);
+
+            // update UI
+            xpCounter.text = $"XP: {xp}/{xpThreshold}";
+            levelCounter.text = $"Levels: {UnlockTokens}";
         }
-
-        // add the weapon
-        m_inputHandler.GetComponent<PlayerWeaponsManager>().AddWeapon(unlockedNode.nodeWeapon);
     }
 
     // listening to enemy deaths
@@ -119,6 +144,10 @@ public class PlayerLevelManager : MonoBehaviour
     {
         EventManager.AddListener<EnemyKillEvent>(GainXP); 
         m_inputHandler = FindObjectOfType<PlayerInputHandler>();   
+
+        // setting the text fields correctly
+        xpCounter.text = $"XP: {xp}/{xpThreshold}";
+        levelCounter.text = $"Levels: {UnlockTokens}";
     }
 
     void Update()
@@ -221,8 +250,24 @@ public class PlayerLevelManager : MonoBehaviour
 
                 // keeping track of button
                 items.Add(uIElement);
+                itemNodes.Add(amounts[i][k]);
             }
         } 
+
+        // Drawing lines
+        for (int i = 0; i < itemNodes.Count; i++){
+            for (int l = 0; l < itemNodes[i].nodes.Count; l++) {
+                Vector3 linePositions = new();
+                float lineAngles = new();
+                linePositions = (items[itemNodes.IndexOf(itemNodes[i].nodes[l])].GetComponent<RectTransform>().localPosition - items[i].GetComponent<RectTransform>().localPosition) / 2;
+                linePositions = new Vector3(linePositions.x, linePositions.y, 5);
+                lineAngles = Mathf.Atan((linePositions.y*2) / (linePositions.x*2)) / Mathf.PI * 180;
+                RectTransform line = Instantiate(linePrefab, items[i].lineContainer);
+                line.localPosition = linePositions;
+                line.localRotation = Quaternion.Euler(0, 0, lineAngles);
+                line.sizeDelta = new Vector2(Mathf.Sqrt(linePositions.x*2 * linePositions.x*2 + linePositions.y*2 * linePositions.y*2), 15);
+            }
+        }
     }
 
     // hide the mods again
@@ -235,6 +280,7 @@ public class PlayerLevelManager : MonoBehaviour
 
         // clearing trackers
         items.Clear();
+        itemNodes.Clear();
     }
 
     // toggling and scaling the background

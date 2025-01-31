@@ -20,6 +20,7 @@ public class NodeUIElement : MonoBehaviour
 
     PlayerLevelManager.Node linkedNode;
     PlayerLevelManager manager;
+    public Transform lineContainer;
 
     // filling the contents of the button
     public void FillContents(PlayerLevelManager.Node link, PlayerLevelManager sender)
