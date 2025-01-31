@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4063968855570068294
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 802265337253148063}
+  - component: {fileID: 7804817849185690274}
+  - component: {fileID: 5293394353161775220}
+  m_Layer: 0
+  m_Name: Mod _ OnFire Pahse 5
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &802265337253148063
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4063968855570068294}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7804817849185690274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4063968855570068294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22cee4ab75c8c6440b6e70a605a8d006, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modName: Mod Name 2
+  type: 0
+  rarity: 0
+  effects:
+  - name: Phase 5m when weapon fire
+    modType: 2
+    description: Phase forward 5m when firing weapon
+    element: 0
+    statType: 0
+    function: 1
+    weapon: 0
+    timeDelay: 0
+    functionality:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5293394353161775220}
+          m_TargetAssemblyTypeName: ModFunctions, fps.Game
+          m_MethodName: Phase
+          m_Mode: 4
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 10
+            m_FloatArgument: 5
+            m_StringArgument: Bulet hit
+            m_BoolArgument: 0
+          m_CallState: 2
+    value: 0
+  prefab: {fileID: 0}
+--- !u!114 &5293394353161775220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4063968855570068294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 189875463c8e25f4c9f280441922f0ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

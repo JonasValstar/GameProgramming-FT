@@ -256,6 +256,23 @@ namespace Unity.FPS.Game
             InitializeTimers();
         }
 
+        // getting all mods in an array
+        public Mod[] GetAllMods()
+        {
+            // making new list
+            List<Mod> allMods = new();
+
+            // looping through all mods
+            for (int g = 0; g < modGroups.Length; g++) {
+                for (int m = 0; m < modGroups[g].mods.Count; m++) {
+                    allMods.Add(modGroups[g].mods[m]);
+                }
+            }
+
+            // returning list as array
+            return allMods.ToArray();
+        }
+
         // creating the modded damages dictionary from the old one
         SerializedDictionary<Elements, float> CreateModDict(SerializedDictionary<Elements, float> oldDict)
         {

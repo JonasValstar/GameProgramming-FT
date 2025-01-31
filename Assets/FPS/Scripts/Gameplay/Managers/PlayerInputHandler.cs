@@ -46,6 +46,18 @@ namespace Unity.FPS.Gameplay
             return Cursor.lockState == CursorLockMode.Locked && !m_GameFlowManager.GameIsEnding;
         }
 
+        // getting the input of pressing the modUI button
+        public bool GetModUIInputDown()
+        {
+            // check if a button can be pressed
+            //if (CanProcessInput()) {
+                return Input.GetButtonDown(GameConstants.k_ButtonModUI);
+            //}
+
+            // if not able to press any button
+            //return false;
+        }
+
         public Vector3 GetMoveInput()
         {
             if (CanProcessInput())

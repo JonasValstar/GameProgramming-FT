@@ -18,7 +18,7 @@ namespace Unity.FPS.Gameplay
         }
 
         [Tooltip("list of currently collected mods")]
-        [SerializeField] private List<Mod> availableMods = new List<Mod>();
+        [SerializeField] public List<Mod> availableMods = new List<Mod>();
 
         [Tooltip("List of weapon the player will start with")]
         public List<WeaponController> StartingWeapons = new List<WeaponController>();
@@ -256,14 +256,6 @@ namespace Unity.FPS.Gameplay
                         IsPointingAtEnemy = true;
                     }
                 }
-            }
-
-            //! debugging attaching and detaching
-            if (Input.GetKeyDown(KeyCode.M)) {
-                AttachMod(availableMods[0]);
-            }
-            if (Input.GetKeyDown(KeyCode.N)) {
-                RemoveMod(justEquipped);
             }
         }
 
