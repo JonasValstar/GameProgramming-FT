@@ -80,6 +80,6 @@ public class ModLootManager : MonoBehaviour
         // listening to when an enemy dies
         EventManager.AddListener<EnemyKillEvent>(SpawnLoot);
 
-        //TODO: Tomorrow
+        //TODO: Tomorrow or not
     }
 }

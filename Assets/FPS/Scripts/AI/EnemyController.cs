@@ -29,6 +29,9 @@ namespace Unity.FPS.AI
         [SerializedDictionary("Rarity", "Spawn Chance")]
         public SerializedDictionary<Rarity, int> rarityChance = new();
 
+        [Tooltip("The minimum and maximum amount of XP this enemy can drop")]
+        public Vector2Int xpAmounts = new();
+
         [Header("Parameters")]
         [Tooltip("The Y height at which the enemy will be automatically killed (if it falls off of the level)")]
         public float SelfDestructYHeight = -20f;

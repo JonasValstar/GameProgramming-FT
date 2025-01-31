@@ -4,6 +4,7 @@
     {
         // all the constant string used across the game
         public const string k_ButtonModUI = "OpenModUI";
+        public const string k_ButtonNodeUI = "OpenNodeUI";
 
         public const string k_AxisNameVertical = "Vertical";
         public const string k_AxisNameHorizontal = "Horizontal";

@@ -11,6 +11,9 @@ namespace Unity.FPS.UI
         [Tooltip("The Mod Menu Manager")]
         [SerializeField] ModUIManager modUIManager;
 
+        [Tooltip("The Mod Menu Manager")]
+        [SerializeField] PlayerLevelManager levelUIManager;
+
         [Tooltip("Root GameObject of the menu used to toggle its activation")]
         public GameObject MenuRoot;
 
@@ -66,13 +69,13 @@ namespace Unity.FPS.UI
         void Update()
         {
             // Lock cursor when clicking outside of menu
-            if (!MenuRoot.activeSelf && !modUIManager.isOpen && Input.GetMouseButtonDown(0))
+            if (!MenuRoot.activeSelf && !modUIManager.isOpen && !levelUIManager.isOpen && Input.GetMouseButtonDown(0))
             {
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape) || (m_PlayerInputsHandler.GetModUIInputDown() && modUIManager.isOpen))
+            if (Input.GetKeyDown(KeyCode.Escape) || (m_PlayerInputsHandler.GetModUIInputDown() && modUIManager.isOpen) || (m_PlayerInputsHandler.GetNodeUIInputDown() && levelUIManager.isOpen))
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;

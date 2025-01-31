@@ -49,13 +49,13 @@ namespace Unity.FPS.Gameplay
         // getting the input of pressing the modUI button
         public bool GetModUIInputDown()
         {
-            // check if a button can be pressed
-            //if (CanProcessInput()) {
-                return Input.GetButtonDown(GameConstants.k_ButtonModUI);
-            //}
+            return Input.GetButtonDown(GameConstants.k_ButtonModUI);
+        }
 
-            // if not able to press any button
-            //return false;
+        // getting the input of pressing the modUI button
+        public bool GetNodeUIInputDown()
+        {
+            return Input.GetButtonDown(GameConstants.k_ButtonNodeUI);
         }
 
         public Vector3 GetMoveInput()
