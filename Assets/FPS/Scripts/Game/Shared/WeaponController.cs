@@ -206,7 +206,6 @@ namespace Unity.FPS.Game
         // loading all mods into the modified stats
         public void LoadMods()
         {
-            //! temporary before UI is implemented
             // stopping timers
             foreach (Coroutine timer in runningTimers) {
                 StopCoroutine(timer);
@@ -338,7 +337,7 @@ namespace Unity.FPS.Game
             // looping through all timers
             for (int i = 0; i < modTimerData.Count; i++) {
                 if (modTimerData[i].onWeapon) // if applicable to weapon, start timer
-                    runningTimers.Add(StartCoroutine(eventTimer(modTimerData[i].timeDelay, modTimerData[i].callEvent)));
+                    runningTimers.Add(StartCoroutine(EventTimer(modTimerData[i].timeDelay, modTimerData[i].callEvent)));
             }
         }
 
@@ -346,7 +345,7 @@ namespace Unity.FPS.Game
 
         #region Timer Coroutine
 
-        IEnumerator eventTimer(float time, UnityEvent uEvent)
+        IEnumerator EventTimer(float time, UnityEvent uEvent)
         {
             // looping until stopped
             while (true) {
@@ -424,9 +423,6 @@ namespace Unity.FPS.Game
             }
 
             IsReloading = false;
-
-            //!!
-            Debug.Log("Reloading");
         }
 
         public void StartReloadAnimation()
@@ -455,11 +451,6 @@ namespace Unity.FPS.Game
                 foreach (UnityEvent uEvent in modFunctions[FunctionType.weaponUpdate]) {
                     uEvent.Invoke();
                 }
-            }
-
-            //! temporary
-            if (Input.GetKeyDown(KeyCode.U)) {
-                LoadMods();
             }
         }
 

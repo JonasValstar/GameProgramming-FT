@@ -90,9 +90,6 @@ public class PlayerLevelManager : MonoBehaviour
     List<Node> itemNodes = new();
     PlayerInputHandler m_inputHandler;
 
-    //! Testing
-    [SerializeField] List<int> checkAmounts;
-
     // gaining an x amount of XP
     void GainXP(EnemyKillEvent evt)
     {

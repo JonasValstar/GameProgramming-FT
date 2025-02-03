@@ -102,9 +102,6 @@ namespace Unity.FPS.Gameplay
 
         #region ModFunctions
 
-        //! debugging variable
-        Mod justEquipped;
-
         // attaching mod to active weapon
         public void AttachMod(Mod mod)
         {
@@ -120,7 +117,6 @@ namespace Unity.FPS.Gameplay
                 Mod newMod = Instantiate(mod, weapon.modGroups[index].transform);
                 newMod.prefab = mod;
                 weapon.modGroups[index].mods.Add(newMod);
-                justEquipped = newMod;
             }
 
             // loading mods

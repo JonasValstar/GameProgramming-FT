@@ -35,6 +35,7 @@ public class ModUIElement : MonoBehaviour
         attached = attachedBool;
     }
 
+    // when clicked on the button
     public void ClickButton()
     {
         // add or remove the mod
@@ -48,6 +49,7 @@ public class ModUIElement : MonoBehaviour
         manager.ReloadModMenu();
     }
 
+    // generating the description for a mod
     String GetDescription(Mod mod)
     {
         string description = "";

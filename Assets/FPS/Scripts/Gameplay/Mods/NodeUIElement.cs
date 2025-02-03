@@ -26,7 +26,7 @@ public class NodeUIElement : MonoBehaviour
     public void FillContents(PlayerLevelManager.Node link, PlayerLevelManager sender)
     {
         // setting the name
-        nodeName.text = link.nodeWeapon.gameObject.name;
+        nodeName.text = link.nodeWeapon.WeaponName;
 
         // setting the groups
         nodeGroups.text = "";
